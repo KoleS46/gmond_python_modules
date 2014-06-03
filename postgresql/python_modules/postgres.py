@@ -120,13 +120,13 @@ def pg_metrics_queries():
         sum(blks_read), sum(blks_hit) from pg_stat_database;')
     results = db_curs.fetchall()
     pg_stat_db_values = results[0]
-    transactions = int(pg_stat_db_values[0])
-    inserts = int(pg_stat_db_values[1])
-    updates = int(pg_stat_db_values[2])
-    deletes = int(pg_stat_db_values[3])
-    reads = int(pg_stat_db_values[4])
-    blksdisk = int(pg_stat_db_values[5])
-    blksmem = int(pg_stat_db_values[6])
+    transactions = int(pg_stat_db_values[0] or 0)
+    inserts = int(pg_stat_db_values[1] or 0)
+    updates = int(pg_stat_db_values[2] or 0)
+    deletes = int(pg_stat_db_values[3] or 0)
+    reads = int(pg_stat_db_values[4] or 0)
+    blksdisk = int(pg_stat_db_values[5] or 0)
+    blksmem = int(pg_stat_db_values[6] or 0)
     pg_metrics.update(
         {'Pypg_transactions':transactions,
         'Pypg_inserts':inserts,
