@@ -56,7 +56,7 @@ def pg_metrics_queries():
     # determine longest transaction in seconds
     sorted_by_xact = sorted(results, key=lambda tup: tup[2], reverse=True)
     longest_xact_in_sec = (sorted_by_xact[0])[2]
-    
+
     # determine longest active query in seconds
     sorted_by_query = sorted(active_results, reverse=True)
     longest_query_in_sec = sorted_by_query[0]
@@ -68,7 +68,7 @@ def pg_metrics_queries():
         'Pypg_idle_in_transaction_sessions':idleintxn,
         'Pypg_longest_xact':longest_xact_in_sec,
         'Pypg_longest_query':longest_query_in_sec})
-    
+
     # locks query
     db_curs.execute('select mode, locktype from pg_locks;')
     results = db_curs.fetchall()
@@ -82,7 +82,7 @@ def pg_metrics_queries():
             if 'Exclusive' in mode:
                 otherexclusive = int(otherexclusive + 1)
         if ('Share' in mode and locktype != 'virtualxid'):
-            shared = int(shared + 1) 
+            shared = int(shared + 1)
     pg_metrics.update(
         {'Pypg_locks_accessexclusive':accessexclusive,
         'Pypg_locks_otherexclusive':otherexclusive,
@@ -95,14 +95,14 @@ def pg_metrics_queries():
         buffers_backend, buffers_alloc from pg_stat_bgwriter;')
     results = db_curs.fetchall()
     bgwriter_values = results[0]
-    checkpoints_timed = int(bgwriter_values[0])
-    checkpoints_req = int(bgwriter_values[1])
-    checkpoint_write_time = int(bgwriter_values[2])
-    checkpoint_sync_time = int(bgwriter_values[3])
-    buffers_checkpoint = int(bgwriter_values[4])
-    buffers_clean = int(bgwriter_values[5])
-    buffers_backend = int(bgwriter_values[6])
-    buffers_alloc = int(bgwriter_values[7])
+    checkpoints_timed = int(bgwriter_values[0] or 0)
+    checkpoints_req = int(bgwriter_values[1] or 0)
+    checkpoint_write_time = int(bgwriter_values[2] or 0)
+    checkpoint_sync_time = int(bgwriter_values[3] or 0)
+    buffers_checkpoint = int(bgwriter_values[4] or 0)
+    buffers_clean = int(bgwriter_values[5] or 0)
+    buffers_backend = int(bgwriter_values[6] or 0)
+    buffers_alloc = int(bgwriter_values[7] or 0)
     pg_metrics.update(
         {'Pypg_bgwriter_checkpoints_timed':checkpoints_timed,
         'Pypg_bgwriter_checkpoints_req':checkpoints_req,
@@ -160,16 +160,16 @@ def pg_metrics_queries():
 # Metric handler uses dictionary pg_metrics keys to return values from queries based on metric name
 def metric_handler(name):
     pg_metrics = pg_metrics_queries()
-    return int(pg_metrics[name])     
+    return int(pg_metrics[name])
 
-# Metric descriptors are initialized here 
+# Metric descriptors are initialized here
 def metric_init(params):
     HOST = str(params.get('host'))
     PORT = str(params.get('port'))
     DB = str(params.get('dbname'))
     USER = str(params.get('username'))
     PASSWORD = str(params.get('password'))
-    
+
     global pgdsn
     pgdsn = "dbname=" + DB + " host=" + HOST + " user=" + USER + " port=" + PORT + " password=" + PASSWORD
 
@@ -214,7 +214,7 @@ def metric_cleanup():
     '''Clean up the metric module.'''
     pass
 
-# this code is for debugging and unit testing    
+# this code is for debugging and unit testing
 if __name__ == '__main__':
     descriptors = metric_init({"host":"hostname_goes_here","port":"port_goes_here","dbname":"database_name_goes_here","username":"username_goes_here","password":"password_goes_here"})
     while True:
