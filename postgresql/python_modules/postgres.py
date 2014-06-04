@@ -144,10 +144,10 @@ def pg_metrics_queries():
         from pg_stat_all_tables;')
     results = db_curs.fetchall()
     pg_stat_table_values = results[0]
-    seqscan = int(pg_stat_table_values[0])
-    idxfetch = int(pg_stat_table_values[1])
-    hours_since_vacuum = int(pg_stat_table_values[2])
-    hours_since_analyze = int(pg_stat_table_values[3])
+    seqscan = int(pg_stat_table_values[0] or 0)
+    idxfetch = int(pg_stat_table_values[1] or 0)
+    hours_since_vacuum = int(pg_stat_table_values[2] or 0)
+    hours_since_analyze = int(pg_stat_table_values[3] or 0)
     pg_metrics.update(
         {'Pypg_tup_seqscan':seqscan,
         'Pypg_tup_idxfetch':idxfetch,
